@@ -1131,11 +1131,14 @@ function fmtPrice(p,a){
 // CLAUDE AI
 // ══════════════════════════════════════════════
 async function claudeCall(prompt,webSearch=false){
-  const body={model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]};
-  if(webSearch) body.tools=[{type:'web_search_20250305',name:'web_search'}];
-  const r=await fetch('https://blue-fire-075dmkts-proxy.aliosnamoor2.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-  const d=await r.json();
-  return d.content.map(i=>i.text||'').filter(Boolean).join('');
+  try{
+    const body={model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]};
+    if(webSearch) body.tools=[{type:'web_search_20250305',name:'web_search'}];
+    const r=await fetch('https://blue-fire-075dmkts-proxy.aliosnamoor2.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json();
+    if(!d||!d.content) return '';
+    return d.content.map(i=>i.text||'').filter(Boolean).join('');
+  }catch(e){console.error('claudeCall error:',e);return '';}
 }
 
 function parseJSON(text){
